@@ -50,7 +50,8 @@ func rootCmd() *cobra.Command {
 		SilenceErrors: true,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			if cfg.URL == "" && cfg.RequestFile == "" && cfg.BulkFile == "" {
-				return fmt.Errorf("you must provide -u/--url, -r/--request-file, or -m/--bulk-file")
+				_ = cmd.Help()
+				return nil
 			}
 
 			// Parse technique
