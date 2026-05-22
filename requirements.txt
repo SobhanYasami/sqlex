@@ -1,5 +1,0 @@
-tldextract
-colorama
-requests
-chardet
-ua_generator

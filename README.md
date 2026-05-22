@@ -1,210 +1,230 @@
-[![GitHub release](https://img.shields.io/badge/release-v1.4.3-brightgreen?style=flat-square)](https://github.com/r0oth3x49/ghauri/releases/tag/1.4.3)
-[![GitHub stars](https://img.shields.io/github/stars/r0oth3x49/ghauri?style=flat-square)](https://github.com/r0oth3x49/ghauri/stargazers)
-[![GitHub forks](https://img.shields.io/github/forks/r0oth3x49/ghauri?style=flat-square)](https://github.com/r0oth3x49/ghauri/network)
-[![GitHub issues](https://img.shields.io/github/issues/r0oth3x49/ghauri?style=flat-square)](https://github.com/r0oth3x49/ghauri/issues)
-[![GitHub license](https://img.shields.io/github/license/r0oth3x49/ghauri?style=flat-square)](https://github.com/r0oth3x49/ghauri/blob/main/LICENSE)
+# sqlex
 
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue?style=flat-square)](LICENSE)
+[![Go](https://img.shields.io/badge/go-1.21+-00ADD8?style=flat-square&logo=go)](https://golang.org)
 
-## ***Like Ghauri, consider supporting the developer***
-<a href="https://www.buymeacoffee.com/r0oth3x49" target="_blank"><img src="https://img.shields.io/badge/Buy%20Me%20a%20Coffee-ffdd00?style=for-the-badge&logo=buy-me-a-coffee&logoColor=black" alt="Buy Me A Coffee"></a> <a href="https://ko-fi.com/r0oth3x49" target="_blank"><img src="https://img.shields.io/badge/Ko--fi-F16061?style=for-the-badge&logo=ko-fi&logoColor=white"></a>
+Advanced SQL injection detection and exploitation tool — a full Go rewrite of [ghauri](https://github.com/r0oth3x49/ghauri), providing a single static binary with no runtime dependencies, true concurrency via goroutine pools, and identical feature parity.
 
+## Features
 
-# Ghauri
-**An advanced cross-platform tool that automates the process of detecting and exploiting SQL injection security flaws.**
+- **Techniques**: boolean-based blind · error-based · time-based blind · stacked queries
+- **DBMS**: MySQL · Microsoft SQL Server · PostgreSQL · Oracle · Microsoft Access
+- **Extraction operators**: `>` (binary search) · `NOT BETWEEN` · `IN(…)` · `=` (linear)
+- **Enumeration**: banner · current user · current DB · hostname · databases · tables · columns · full table dump (CSV)
+- **Session resumption**: SQLite-backed per-target session under `~/.ghauri/<host>/<hash>/`
+- **Concurrency**: goroutine pool (`--threads N`) for parallel character extraction
+- **Injection points**: GET · POST · Cookie · HTTP headers · JSON body · XML body · multipart
 
-![ghauri-banner](https://user-images.githubusercontent.com/11024397/193408429-418a75e0-a070-4491-9f92-5799b2509cdf.PNG)
+## Installation
 
-## ***Requirements***
+**From source** (requires Go 1.21+):
 
-- Python 3
-- Python `pip3`
+```sh
+git clone https://github.com/SobhanYasami/sqlex.git
+cd sqlex
+go build -o sqlex ./cmd/ghauri/
+```
 
-## ***Installation***
+**Install to `$GOPATH/bin`**:
 
- - cd to **ghauri** directory.
- - install requirements: `python3 -m pip install --upgrade -r requirements.txt`
- - run: `python3 setup.py install` or `python3 -m pip install -e .`
- - you will be able to access and run the ghauri with simple `ghauri --help` command.
+```sh
+go install github.com/SobhanYasami/sqlex/cmd/ghauri@latest
+```
 
- ***OR***
-  
- - Follow this [installation guideline](https://github.com/r0oth3x49/ghauri/issues/119#issuecomment-1873049386) if facing an installation issue.
+## Quick Start
 
-## ***Download Ghauri***
+```sh
+# Basic boolean-based detection
+sqlex -u "http://target/page?id=1"
 
-You can download the latest version of Ghauri by cloning the GitHub repository.
+# Test POST parameter with error + boolean techniques
+sqlex -u "http://target/login" -d "user=admin&pass=test" -t BE
 
-    git clone https://github.com/r0oth3x49/ghauri.git
+# Force DBMS, enumerate databases
+sqlex -u "http://target/page?id=1" --dbms MySQL --dbs
 
-## ***Features***
- - Supports following types of injection payloads:
-   - Boolean based.
-   - Error Based
-   - Time Based
-   - Stacked Queries
- - Support SQL injection for following DBMS.
-   - MySQL
-   - Microsoft SQL Server
-   - Postgres
-   - Oracle
-   - Microsoft Access (only supports fingerprint for now in case of boolean based blind)
- - Supports following injection types.
-   - GET/POST Based injections
-   - Headers Based injections
-   - Cookies Based injections
-   - Mulitipart Form data injections
-   - JSON based injections
-   - SOAP/XML based injections
- - support proxy option `--proxy`.
- - supports parsing request from txt file: switch for that `-r file.txt`
- - supports limiting data extraction for dbs/tables/columns/dump: switch `--start 1 --stop 2`
- - added support for resuming of all phases.
- - added support for skip urlencoding switch: `--skip-urlencode`
- - added support to verify extracted characters in case of boolean/time based injections.
- - added support for handling redirects on user demand.
- - added support for sql-shell switch: `--sql-shell` (experimental)
- - added support for fresh queries switch: `--fresh-queries`
- - added switch for hostname extraction: `--hostname`
- - added switch to update ghauri from github: `--update` 
-    - Note: ghauri has to be cloned/installed from github for this switch to work for futures updates,
-      for older version users they have to run git pull (if installed using git) to get this update
-      and for futures updates the update will be possible with `ghauri --update` command to get the
-      latest version of ghauri.
- - added switch for ignore problematic HTTP codes. (e.g 401): `--ignore-code`
- - added switch for retreiving entries count for table.: `--count`
- - added switch for Scanning multiple targets given in a textual fil. `-m` (experimental)
- - added auto detection and exploitation of base64 deserializable GET parameters. (experimental)
- - added support for random HTTP user agent: `--random-agent, --mobile`
+# Dump a specific table
+sqlex -u "http://target/page?id=1" -D mydb -T users --dump
 
-## **Advanced Usage**
+# Dump specific columns with row range
+sqlex -u "http://target/page?id=1" -D mydb -T users -C "username,password" --start 1 --stop 50 --dump
 
-<pre><code>
-Author: Nasir khan (<a href="https://pk.linkedin.com/in/r0oth3x49">r0ot h3x49</a>)
+# Load request from Burp file, use random User-Agent, 5 threads
+sqlex -r request.txt --random-agent --threads 5 --dbs
 
-usage: ghauri -u URL [OPTIONS]
+# Resume a previous session (automatic — session is per-target URL hash)
+sqlex -u "http://target/page?id=1" --dump   # continues where it left off
 
-A cross-platform python based advanced sql injections detection & exploitation tool.
+# Flush session and start fresh
+sqlex -u "http://target/page?id=1" --flush-session --dbs
+```
 
-General:
-  -h, --help          Shows the help.
-  --version           Shows the version.
-  --update            update ghauri
-  -v VERBOSE          Verbosity level: 1-5 (default 1).
-  --batch             Never ask for user input, use the default behavior
-  --flush-session     Flush session files for current target
-  --fresh-queries     Ignore query results stored in session file
-  --test-filter       Select test payloads by titles (experimental)
+## All Flags
 
-Target:
-  At least one of these options has to be provided to define the
-  target(s)
+### Target
 
-  -u URL, --url URL   Target URL (e.g. 'http://www.site.com/vuln.php?id=1).
-  -m BULKFILE         Scan multiple targets given in a textual file
-  -r REQUESTFILE      Load HTTP request from a file
+| Flag | Short | Description |
+| ------ | ------- | ----------- |
+| `--url` | `-u` | Target URL |
+| `--data` | `-d` | POST body data |
+| `--cookie` | | HTTP Cookie header |
+| `--headers` | `-H` | Extra headers (newline-separated `Key: Value`) |
+| `--proxy` | | HTTP proxy (`http://127.0.0.1:8080`) |
+| `--request-file` | `-r` | Load raw HTTP request from file (Burp-style) |
+| `--bulk-file` | `-m` | File of target URLs to scan one per line |
 
-Request:
-  These options can be used to specify how to connect to the target URL
+### Detection
 
-  -A , --user-agent   HTTP User-Agent header value
-  -H , --header       Extra header (e.g. "X-Forwarded-For: 127.0.0.1")
-  --mobile            Imitate smartphone through HTTP User-Agent header
-  --random-agent      Use randomly selected HTTP User-Agent header value
-  --host              HTTP Host header value
-  --data              Data string to be sent through POST (e.g. "id=1")
-  --cookie            HTTP Cookie header value (e.g. "PHPSESSID=a8d127e..")
-  --referer           HTTP Referer header value
-  --headers           Extra headers (e.g. "Accept-Language: fr\nETag: 123")
-  --proxy             Use a proxy to connect to the target URL
-  --delay             Delay in seconds between each HTTP request
-  --timeout           Seconds to wait before timeout connection (default 30)
-  --retries           Retries when the connection related error occurs (default 3)
-  --confirm           Confirm the injected payloads.
-  --ignore-code       Ignore (problematic) HTTP error code(s) (e.g. 401)
-  --skip-urlencode    Skip URL encoding of payload data
-  --force-ssl         Force usage of SSL/HTTPS
+| Flag | Short | Default | Description |
+| ------ | ------- | --------- | ----------- |
+| `--technique` | `-t` | `BT` | Techniques: `B`=boolean, `E`=error, `T`=time |
+| `--dbms` | | | Force back-end DBMS |
+| `--level` | | `1` | Test depth 1–5 |
+| `--test-parameter` | | | Restrict to specific parameter name |
+| `--prefix` | | | Payload prefix |
+| `--suffix` | | | Payload suffix |
+| `--string` | | | String present on true response |
+| `--not-string` | | | String present on false response |
+| `--code` | | | HTTP status code indicating true |
+| `--text-only` | | | Compare text content only (ignore tags) |
 
-Optimization:
-  These options can be used to optimize the performance of ghauri
+### Request Tuning
 
-  --threads THREADS   Max number of concurrent HTTP(s) requests (default 1)
+| Flag | Default | Description |
+| ------ | --------- | ----------- |
+| `--delay` | `0` | Seconds between requests |
+| `--timeout` | `30` | Connection timeout (seconds) |
+| `--time-sec` | `5` | Sleep duration for time-based payloads |
+| `--retries` | `3` | Retry count on timeout |
+| `--threads` | `1` | Parallel extraction goroutines |
+| `--skip-urlencode` | | Skip URL-encoding payloads |
+| `--safe-chars` | | Characters to exclude from URL encoding |
+| `--random-agent` | | Random User-Agent header |
+| `--mobile` | | Mobile User-Agent |
+| `--follow-redirect` | | `true`/`false` to override redirect behaviour |
+| `--force-ssl` | | Force HTTPS |
 
-Injection:
-  These options can be used to specify which parameters to test for,
-  provide custom injection payloads and optional tampering scripts
+### Optimisation
 
-  -p TESTPARAMETER    Testable parameter(s)
-  --dbms DBMS         Force back-end DBMS to provided value
-  --prefix            Injection payload prefix string
-  --suffix            Injection payload suffix string
-  --safe-chars        Skip URL encoding of specific character(s): (e.g:- --safe-chars="[]")
-  --fetch-using       Fetch data using different operator(s): (e.g: --fetch-using=between/in)
+| Flag | Description |
+| ------ | ----------- |
+| `--fetch-using` | Force extraction operator: `greater` / `between` / `in` / `equal` |
 
-Detection:
-  These options can be used to customize the detection phase
+### Session
 
-  --level LEVEL       Level of tests to perform (1-3, default 1)
-  --code CODE         HTTP code to match when query is evaluated to True
-  --string            String to match when query is evaluated to True
-  --not-string        String to match when query is evaluated to False
-  --text-only         Compare pages based only on the textual content
+| Flag | Description |
+| ------ | ----------- |
+| `--session-dir` | Override session directory path |
+| `--flush-session` | Delete and recreate session for this target |
+| `--fresh-queries` | Ignore cached extraction results, re-run queries |
 
-Techniques:
-  These options can be used to tweak testing of specific SQL injection
-  techniques
+### Enumeration
 
-  --technique TECH    SQL injection techniques to use (default "BEST")
-  --time-sec TIMESEC  Seconds to delay the DBMS response (default 5)
+| Flag | Short | Description |
+| ------ | ------- | ----------- |
+| `--banner` | | Retrieve DBMS version banner |
+| `--current-user` | | Current database user |
+| `--current-db` | | Current database name |
+| `--hostname` | | Database server hostname |
+| `--dbs` | | List all databases |
+| `--tables` | | List tables in `--db` |
+| `--columns` | | List columns in `--db` / `--table` |
+| `--dump` | | Dump rows from `--db` / `--table` |
+| `--count` | | Row count only (no data) |
+| `--db` | `-D` | Target database name |
+| `--table` | `-T` | Target table name |
+| `--col` | `-C` | Comma-separated column list |
+| `--start` | | First row offset (1-based) |
+| `--stop` | | Last row offset |
 
-Enumeration:
-  These options can be used to enumerate the back-end database
-  management system information, structure and data contained in the
-  tables.
+### Misc
 
-  -b, --banner        Retrieve DBMS banner
-  --current-user      Retrieve DBMS current user
-  --current-db        Retrieve DBMS current database
-  --hostname          Retrieve DBMS server hostname
-  --dbs               Enumerate DBMS databases
-  --tables            Enumerate DBMS database tables
-  --columns           Enumerate DBMS database table columns
-  --count             Retrieve number of entries for table(s)
-  --dump              Dump DBMS database table entries
-  -D DB               DBMS database to enumerate
-  -T TBL              DBMS database tables(s) to enumerate
-  -C COLS             DBMS database table column(s) to enumerate
-  --start             Retrieve entries from offset for dbs/tables/columns/dump
-  --stop              Retrieve entries till offset for dbs/tables/columns/dump
-  --sql-shell         Prompt for an interactive SQL shell (experimental)
+| Flag | Short | Description |
+| ------ | ------- | ----------- |
+| `--batch` | `-b` | Non-interactive mode (accept defaults) |
+| `--verbose` | `-v` | Verbosity 0–6 (default 1) |
 
-Example:
-  ghauri -u http://www.site.com/vuln.php?id=1 --dbs
+## Examples
 
+### Full recon in one pass
 
-</code></pre>
+```sh
+sqlex -u "http://target/item?id=5" \
+  --banner --current-user --current-db --hostname \
+  --dbs --random-agent -b
+```
 
+### Dump via Burp request file through proxy
 
-## **Legal disclaimer**
+```sh
+sqlex -r /tmp/req.txt \
+  --proxy http://127.0.0.1:8080 \
+  -D shopdb -T orders --dump \
+  --threads 4 --batch
+```
 
-    Usage of Ghauri for attacking targets without prior mutual consent is illegal.
-    It is the end user's responsibility to obey all applicable local,state and federal laws. 
-    Developer assume no liability and is not responsible for any misuse or damage caused by this program.
+### JSON POST body injection
 
-## **TODO**
-  - Add support for inline queries.
-  - Add support for Union based queries
+```sh
+sqlex -u "http://api.target/search" \
+  -d '{"query":"test"}' \
+  -H "Content-Type: application/json" \
+  -t B --current-db
+```
 
-## ***Why choose Ghauri***
+### Custom injection marker in cookie
 
-There are numerous articles and posts highlighting the success users have had with Ghauri compared to SQLMap. While I am not directly comparing Ghauri to SQLMap, many users have done so. I initiated this project because, in my daily work, I frequently encountered significant challenges in configuring and using SQLMap effectively, even for seemingly simple SQL injections. Despite these injections appearing straightforward, SQLMap often failed to detect them. Encouraged by a friend, I decided to create my own tool. I had developed numerous scripts for exploitation, each tailored for specific cases, and I realized the potential benefit of integrating these techniques into a single module. This led to the creation of Ghauri, which has been well-received by the community, earning positive feedback and stars due to its effectiveness.
+```sh
+sqlex -u "http://target/dashboard" \
+  --cookie "session=abc123*; lang=en" \
+  --dbs
+```
 
-Even ***Stamparam*** acknowledged Ghauri, describing it as a "rewrite of internals" in a tweet, underscoring the importance of its internal mechanics.
+Placing `*` in a parameter value forces sqlex to test that specific location.
 
-For example, you can save a vulnerable HTTP request to a file (an SQLi behind authentication) and provide it to both Ghauri and SQLMap using the -r switch. The results will speak for themselves without requiring custom configurations.
+### Time-based on a blind endpoint
 
-Ghauri operates both in a browser-like manner and with its own unique methods, automatically switching to different exfiltration techniques and bypasses. Again, this is not a direct comparison since Ghauri still has many features to be implemented, while SQLMap is already feature-rich. However, Ghauri consistently performs the tasks required.
+```sh
+sqlex -u "http://target/track?uid=1" \
+  -t T --dbms MySQL \
+  --time-sec 6 --retries 5 \
+  --current-db
+```
 
-Since developing this tool, I seldom use SQLMap, except in a few cases where Ghauri is still being improved.
+## Session Files
 
-I encourage you to try it for yourself.
-Thank you.
+Sessions live at `~/.ghauri/<hostname>/<md5[:8]>/`:
+
+```
+~/.ghauri/
+└── target.example.com/
+    └── a3f2c1b0/
+        ├── session.sqlite   # injection fingerprint + partial extraction cache
+        └── dump/
+            └── mydb/
+                └── users.csv
+```
+
+Re-running the same URL + data combination automatically resumes from where extraction stopped. Use `--flush-session` to start over.
+
+## Architecture
+
+```
+cmd/sqlex/         CLI entry point (cobra)
+internal/
+  config/           Config + RunState structs
+  engine/           Orchestration: injection → enumeration
+  detection/        BasicCheck, CheckInjections (boolean/error/time)
+  dbms/             DBMS fingerprinting via boolean expression probes
+  extract/          Character extraction: binary / between / in / linear search
+  enumeration/      FetchBanner, FetchDBs, FetchTables, FetchColumns, DumpTable
+  inject/           Parameter substitution → HTTP dispatch
+  payloads/         Embedded payload JSON, render helpers, UA list
+  request/          HTTP client + response type
+  session/          SQLite WAL session (modernc.org/sqlite, pure Go)
+  utils/            FilterHTML, SequenceRatio, CheckBooleanResponses, param parsing
+```
+
+## License
+
+MIT — see [LICENSE](LICENSE).
