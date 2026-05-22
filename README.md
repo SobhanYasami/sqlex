@@ -22,13 +22,13 @@ Advanced SQL injection detection and exploitation tool — a full Go rewrite of 
 ```sh
 git clone https://github.com/SobhanYasami/sqlex.git
 cd sqlex
-go build -o sqlex ./cmd/ghauri/
+go build -o sqlex ./cmd/sqlex/
 ```
 
 **Install to `$GOPATH/bin`**:
 
 ```sh
-go install github.com/SobhanYasami/sqlex/cmd/ghauri@latest
+go install github.com/SobhanYasami/sqlex/cmd/sqlex@latest
 ```
 
 ## Quick Start
