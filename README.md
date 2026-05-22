@@ -26,7 +26,7 @@ go install github.com/SobhanYasami/sqlex/cmd/sqlex@latest
 **Specific version**:
 
 ```sh
-go install github.com/SobhanYasami/sqlex/cmd/sqlex@v1.0.0
+go install github.com/SobhanYasami/sqlex/cmd/sqlex@v1.1.0
 ```
 
 **From source**:
