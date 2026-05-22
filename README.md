@@ -3,7 +3,7 @@
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue?style=flat-square)](LICENSE)
 [![Go](https://img.shields.io/badge/go-1.21+-00ADD8?style=flat-square&logo=go)](https://golang.org)
 
-Advanced SQL injection detection and exploitation tool — a full Go rewrite of [ghauri](https://github.com/r0oth3x49/ghauri), providing a single static binary with no runtime dependencies, true concurrency via goroutine pools, and identical feature parity.
+Advanced SQL injection detection and exploitation tool written in Go. Single static binary, no runtime dependencies, true concurrency via goroutine pools.
 
 ## Features
 
@@ -11,7 +11,7 @@ Advanced SQL injection detection and exploitation tool — a full Go rewrite of 
 - **DBMS**: MySQL · Microsoft SQL Server · PostgreSQL · Oracle · Microsoft Access
 - **Extraction operators**: `>` (binary search) · `NOT BETWEEN` · `IN(…)` · `=` (linear)
 - **Enumeration**: banner · current user · current DB · hostname · databases · tables · columns · full table dump (CSV)
-- **Session resumption**: SQLite-backed per-target session under `~/.ghauri/<host>/<hash>/`
+- **Session resumption**: SQLite-backed per-target session under `~/.sqlex/<host>/<hash>/`
 - **Concurrency**: goroutine pool (`--threads N`) for parallel character extraction
 - **Injection points**: GET · POST · Cookie · HTTP headers · JSON body · XML body · multipart
 
@@ -199,10 +199,10 @@ sqlex -u "http://target/track?uid=1" \
 
 ## Session Files
 
-Sessions live at `~/.ghauri/<hostname>/<md5[:8]>/`:
+Sessions live at `~/.sqlex/<hostname>/<md5[:8]>/`:
 
 ```
-~/.ghauri/
+~/.sqlex/
 └── target.example.com/
     └── a3f2c1b0/
         ├── session.sqlite   # injection fingerprint + partial extraction cache

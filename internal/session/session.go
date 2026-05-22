@@ -84,7 +84,7 @@ func (s *Session) GenerateFilepath(rawURL, method, data string, flushSession boo
 
 	// hash of url+method+data for uniqueness
 	h := fmt.Sprintf("%x", md5.Sum([]byte(rawURL+method+data)))[:8]
-	dir := filepath.Join(os.Getenv("HOME"), ".ghauri", host, h)
+	dir := filepath.Join(os.Getenv("HOME"), ".sqlex", host, h)
 	if err := os.MkdirAll(dir, 0755); err != nil {
 		return Filepaths{}, err
 	}

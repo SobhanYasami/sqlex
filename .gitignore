@@ -1,6 +1,5 @@
 # Binaries (root-level build output only)
 /sqlex
-/ghauri
 *.exe
 *.out
 *.test
@@ -21,8 +20,8 @@
 coverage.html
 coverage.out
 
-# Session data written by the tool at runtime
-~/.ghauri/
+# Session data (~/.sqlex/ is written at runtime, not part of the repo)
+.sqlex/
 
 # Editor / IDE
 .idea/
