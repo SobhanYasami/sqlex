@@ -1,6 +1,6 @@
-# Binaries
-sqlex
-ghauri
+# Binaries (root-level build output only)
+/sqlex
+/ghauri
 *.exe
 *.out
 *.test
