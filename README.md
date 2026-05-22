@@ -17,18 +17,24 @@ Advanced SQL injection detection and exploitation tool — a full Go rewrite of 
 
 ## Installation
 
-**From source** (requires Go 1.21+):
+**One-liner** (requires Go 1.21+):
+
+```sh
+go install github.com/SobhanYasami/sqlex/cmd/sqlex@latest
+```
+
+**Specific version**:
+
+```sh
+go install github.com/SobhanYasami/sqlex/cmd/sqlex@v1.0.0
+```
+
+**From source**:
 
 ```sh
 git clone https://github.com/SobhanYasami/sqlex.git
 cd sqlex
 go build -o sqlex ./cmd/sqlex/
-```
-
-**Install to `$GOPATH/bin`**:
-
-```sh
-go install github.com/SobhanYasami/sqlex/cmd/sqlex@latest
 ```
 
 ## Quick Start
