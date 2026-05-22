@@ -5,6 +5,8 @@
 
 Advanced SQL injection detection and exploitation tool written in Go. Single static binary, no runtime dependencies, true concurrency via goroutine pools.
 
+**→ [Full User Guide & Tool Chaining (nuclei, katana, ffuf, Burp)](docs/USERGUIDE.md)**
+
 ## Features
 
 - **Techniques**: boolean-based blind · error-based · time-based blind · stacked queries
